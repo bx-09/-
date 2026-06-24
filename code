@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>萌宠成长日记</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei";
+        }
+        body {
+            background: #f0f8ff;
+            padding: 20px;
+        }
+        .container {
+            width: 700px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 14px;
+            padding: 25px;
+            box-shadow: 0 2px 12px #cce4f7;
+        }
+        h2 {
+            text-align: center;
+            color: #2668b8;
+            margin-bottom: 20px;
+        }
+        .page {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .row {
+            margin: 12px 0;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+        }
+        input, select {
+            width: 380px;
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 8px 14px;
+            margin: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-blue {
+            background: #3b7ddd;
+            color: white;
+        }
+        .btn-green {
+            background: #28a745;
+            color: white;
+        }
+        .btn-red {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-gray {
+            background: #888;
+            color: white;
+        }
+        .btn-logout {
+            background: #ff6b35;
+            color: white;
+            float: right;
+            margin-bottom:10px;
+        }
+        .box {
+            background: #f7fbff;
+            padding: 14px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .list-item {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 登录页 -->
+        <div id="pageLogin" class="page active">
+            <h2>萌宠成长日记 - 用户登录</h2>
+            <div class="row">
+                <label>手机号：</label>
+                <input id="phone" placeholder="请输入手机号">
+            </div>
+            <div class="row">
+                <label>密码：</label>
+                <input id="pwd" type="password" placeholder="请输入密码">
+            </div>
+            <div style="text-align:center;margin-top:20px">
+                <button class="btn-blue" onclick="login()">登录</button>
+                <button class="btn-green" onclick="switchPage('pageRegister')">前往注册</button>
+            </div>
+        </div>
+
+        <!-- 注册页面 -->
+        <div id="pageRegister" class="page">
+            <h2>账号注册</h2>
+            <div class="row">
+                <label>手机号：</label>
+                <input id="regPhone" placeholder="请输入手机号">
+            </div>
+            <div class="row">
+                <label>设置密码：</label>
+                <input id="regPwd" type="password" placeholder="请设置登录密码">
+            </div>
+            <div style="text-align:center;margin-top:20px">
+                <button class="btn-green" onclick="doRegister()">完成注册</button>
+                <button class="btn-gray" onclick="switchPage('pageLogin')">返回登录</button>
+            </div>
+        </div>
+
+        <!-- 首页 宠物管理 -->
+        <div id="pageHome" class="page">
+            <button class="btn-logout" onclick="logout()">退出登录（切换账号）</button>
+            <h2>我的宠物档案</h2>
+            <div class="box">
+                <h4>添加新宠物（最多5只）</h4>
+                <div class="row">
+                    <label>宠物名称：</label>
+                    <input id="petName">
+                </div>
+                <div class="row">
+                    <label>品种：</label>
+                    <input id="petType">
+                </div>
+                <div class="row">
+                    <label>性别：</label>
+                    <select id="petSex">
+                        <option>公</option>
+                        <option>母</option>
+                    </select>
+                </div>
+                <div class="row">
+                    <label>生日：</label>
+                    <input id="petBirth" type="date">
+                </div>
+                <button class="btn-green" onclick="addPet()">新增宠物</button>
+            </div>
+            <div class="box">
+                <h4>我的宠物列表</h4>
+                <div id="petList"></div>
+            </div>
+            <div style="text-align:center">
+                <button class="btn-blue" onclick="switchPage('pageGrow')">成长记录</button>
+                <button class="btn-blue" onclick="switchPage('pageHealth')">健康管理</button>
+                <button class="btn-blue" onclick="switchPage('pageFeed')">喂食记录</button>
+                <button class="btn-blue" onclick="switchPage('pageStat')">数据统计</button>
+            </div>
+        </div>
+
+        <!-- 成长记录页 -->
+        <div id="pageGrow" class="page">
+            <button class="btn-logout" onclick="logout()">退出登录（切换账号）</button>
+            <h2>宠物成长记录</h2>
+            <div class="row">
+                <label>选择宠物：</label>
+                <select id="growPet"></select>
+            </div>
+            <div class="row">
+                <label>体重(kg)：</label>
+                <input id="growWeight" type="number" step="0.01">
+            </div>
+            <div class="row">
+                <label>身高(cm)：</label>
+                <input id="growHeight" type="number">
+            </div>
+            <div class="row">
+                <label>成长日记：</label>
+                <textarea id="growDiary"></textarea>
+            </div>
+            <button class="btn-green" onclick="addGrow()">保存记录</button>
+            <div class="box">
+                <h4>成长时间轴</h4>
+                <div id="growList"></div>
+            </div>
+            <button class="btn-blue" onclick="switchPage('pageHome')">返回首页</button>
+        </div>
+
+        <!-- 健康管理 -->
+        <div id="pageHealth" class="page">
+            <button class="btn-logout" onclick="logout()">退出登录（切换账号）</button>
+            <h2>健康台账 & 到期提醒</h2>
+            <div class="row">
+                <label>选择宠物：</label>
+                <select id="healthPet"></select>
+            </div>
+            <div class="row">
+                <label>类型：</label>
+                <select id="healthType">
+                    <option>疫苗</option>
+                    <option>驱虫</option>
+                    <option>疾病</option>
+                </select>
+            </div>
+            <div class="row">
+                <label>名称：</label>
+                <input id="healthName">
+            </div>
+            <div class="row">
+                <label>记录日期：</label>
+                <input id="healthDate" type="date">
+            </div>
+            <div class="row">
+                <label>下次提醒日：</label>
+                <input id="healthNext" type="date">
+            </div>
+            <button class="btn-green" onclick="addHealth()">保存健康记录</button>
+            <div class="box">
+                <h4>待提醒养护（提前7天）</h4>
+                <div id="remindBox"></div>
+            </div>
+            <div class="box">
+                <h4>全部健康记录</h4>
+                <div id="healthList"></div>
+            </div>
+            <button class="btn-blue" onclick="switchPage('pageHome')">返回首页</button>
+        </div>
+
+        <!-- 喂食记录 -->
+        <div id="pageFeed" class="page">
+            <button class="btn-logout" onclick="logout()">退出登录（切换账号）</button>
+            <h2>日常喂食记录</h2>
+            <div class="row">
+                <label>选择宠物：</label>
+                <select id="feedPet"></select>
+            </div>
+            <div class="row">
+                <label>食物名称：</label>
+                <input id="feedName">
+            </div>
+            <div class="row">
+                <label>喂食量：</label>
+                <input id="feedAmount">
+            </div>
+            <div class="row">
+                <label>备注：</label>
+                <textarea id="feedNote"></textarea>
+            </div>
+            <button class="btn-green" onclick="addFeed()">保存喂食记录</button>
+            <div class="box">
+                <h4>喂食历史</h4>
+                <div id="feedList"></div>
+            </div>
+            <button class="btn-blue" onclick="switchPage('pageHome')">返回首页</button>
+        </div>
+
+        <!-- 数据统计 -->
+        <div id="pageStat" class="page">
+            <button class="btn-logout" onclick="logout()">退出登录（切换账号）</button>
+            <h2>宠物成长数据统计</h2>
+            <div class="row">
+                <label>选择宠物：</label>
+                <select id="statPet"></select>
+            </div>
+            <button class="btn-blue" onclick="showStat()">生成成长报告</button>
+            <div class="box" id="statResult"></div>
+            <button class="btn-blue" onclick="switchPage('pageHome')">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // 本地存储初始化
+        let userData = JSON.parse(localStorage.getItem("petUser")) || null;
+        let allUsers = JSON.parse(localStorage.getItem("allPetUsers")) || [];
+        let pets = [];
+        let growRecords = [];
+        let healthRecords = [];
+        let feedRecords = [];
+
+        // 页面切换通用方法
+        function switchPage(id) {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+            document.getElementById(id).classList.add("active");
+            if(id === "pageHome") loadPetList();
+            if(id === "pageGrow") loadPetSelect("growPet");
+            if(id === "pageHealth") { loadPetSelect("healthPet"); calcRemind(); }
+            if(id === "pageFeed") loadPetSelect("feedPet");
+            if(id === "pageStat") loadPetSelect("statPet");
+        }
+
+        // 退出登录
+        function logout(){
+            userData = null;
+            pets = [];
+            growRecords = [];
+            healthRecords = [];
+            feedRecords = [];
+            localStorage.removeItem("petUser");
+            alert("已退出，可登录其他手机号！");
+            switchPage("pageLogin");
+        }
+
+        // 注册逻辑
+        function doRegister() {
+            let phone = document.getElementById("regPhone").value.trim();
+            let pwd = document.getElementById("regPwd").value.trim();
+            if(!phone || !pwd) return alert("手机号和密码不能为空");
+            if(allUsers.find(u=>u.phone === phone)) return alert("该手机号已注册");
+            let newUser = {phone, pwd, pets:[], grow:[], health:[], feed:[]};
+            allUsers.push(newUser);
+            localStorage.setItem("allPetUsers", JSON.stringify(allUsers));
+            alert("注册成功，请登录！");
+            switchPage("pageLogin");
+        }
+
+        // 登录
+        function login() {
+            let phone = document.getElementById("phone").value.trim();
+            let pwd = document.getElementById("pwd").value.trim();
+            let u = allUsers.find(x=>x.phone === phone && x.pwd===pwd);
+            if(!u) return alert("账号或密码错误");
+            userData = u;
+            localStorage.setItem("petUser", JSON.stringify(userData));
+            pets = userData.pets;
+            growRecords = userData.grow;
+            healthRecords = userData.health;
+            feedRecords = userData.feed;
+            switchPage("pageHome");
+        }
+
+        // 保存用户数据到本地
+        function saveUserData() {
+            userData.pets = pets;
+            userData.grow = growRecords;
+            userData.health = healthRecords;
+            userData.feed = feedRecords;
+            let idx = allUsers.findIndex(u=>u.phone === userData.phone);
+            allUsers[idx] = userData;
+            localStorage.setItem("allPetUsers", JSON.stringify(allUsers));
+            localStorage.setItem("petUser", JSON.stringify(userData));
+        }
+
+        // 加载宠物下拉框
+        function loadPetSelect(selId) {
+            let sel = document.getElementById(selId);
+            sel.innerHTML = "";
+            pets.forEach(p=>{
+                let opt = document.createElement("option");
+                opt.value = p.petId;
+                opt.innerText = p.petName;
+                sel.appendChild(opt);
+            })
+        }
+
+        // 添加宠物
+        function addPet() {
+            if(pets.length >=5) return alert("最多添加5只宠物");
+            let name = document.getElementById("petName").value.trim();
+            let type = document.getElementById("petType").value.trim();
+            let sex = document.getElementById("petSex").value;
+            let birth = document.getElementById("petBirth").value;
+            if(!name) return alert("宠物名称不能为空");
+            let pet = {
+                petId: Date.now().toString(),
+                petName: name,
+                petType: type,
+                sex,
+                birth
+            }
+            pets.push(pet);
+            saveUserData();
+            loadPetList();
+            alert("宠物添加成功");
+        }
+
+        // 加载宠物列表
+        function loadPetList() {
+            let box = document.getElementById("petList");
+            box.innerHTML = "";
+            if(pets.length ===0) {
+                box.innerHTML = "<div class='list-item'>暂无宠物，请添加</div>";
+                return;
+            }
+            pets.forEach(p=>{
+                let div = document.createElement("div");
+                div.className = "list-item";
+                div.innerHTML = ` ${p.petName} | ${p.petType} | ${p.sex} | 生日:${p.birth} 
+                <button class="btn-red" onclick="delPet('${p.petId}')">删除</button> `;
+                box.appendChild(div);
+            })
+        }
+
+        // 删除宠物（级联删除所有记录）
+        function delPet(pid) {
+            pets = pets.filter(p=>p.petId !== pid);
+            growRecords = growRecords.filter(r=>r.petId !== pid);
+            healthRecords = healthRecords.filter(r=>r.petId !== pid);
+            feedRecords = feedRecords.filter(r=>r.petId !== pid);
+            saveUserData();
+            loadPetList();
+            alert("宠物及所有记录已删除");
+        }
+
+        // 新增成长记录
+        function addGrow() {
+            let pid = document.getElementById("growPet").value;
+            let w = document.getElementById("growWeight").value;
+            let h = document.getElementById("growHeight").value;
+            let diary = document.getElementById("growDiary").value;
+            if(!w) return alert("请填写体重");
+            let rec = {
+                rid: Date.now().toString(),
+                petId: pid,
+                weight: w,
+                height: h,
+                diary,
+                date: new Date().toLocaleDateString()
+            }
+            growRecords.push(rec);
+            saveUserData();
+            loadGrowList();
+            alert("成长记录保存成功");
+        }
+
+        function loadGrowList() {
+            let box = document.getElementById("growList");
+            box.innerHTML = "";
+            growRecords.sort((a,b)=>new Date(b.date)-new Date(a.date));
+            growRecords.forEach(r=>{
+                let p = pets.find(x=>x.petId === r.petId);
+                let div = document.createElement("div");
+                div.className = "list-item";
+                div.innerText = `【${p.petName} ${r.date}】体重${r.weight}kg 身高${r.height}cm 日记：${r.diary}`;
+                box.appendChild(div);
+            })
+        }
+
+        // 健康记录
+        function addHealth() {
+            let pid = document.getElementById("healthPet").value;
+            let type = document.getElementById("healthType").value;
+            let name = document.getElementById("healthName").value;
+            let date = document.getElementById("healthDate").value;
+            let next = document.getElementById("healthNext").value;
+            if(!name || !date || !next) return alert("请完善信息");
+            let rec = {
+                hid: Date.now().toString(),
+                petId: pid,
+                type,
+                name,
+                date,
+                nextDate: next
+            }
+            healthRecords.push(rec);
+            saveUserData();
+            calcRemind();
+            loadHealthList();
+            alert("健康记录保存成功");
+        }
+
+        // 计算7天内到期提醒
+        function calcRemind() {
+            let remindBox = document.getElementById("remindBox");
+            remindBox.innerHTML = "";
+            let today = new Date();
+            let remindList = healthRecords.filter(r=>{
+                let nd = new Date(r.nextDate);
+                let diff = (nd - today)/(1000*60*60*24);
+                return diff >=0 && diff <=7;
+            })
+            if(remindList.length ===0) {
+                remindBox.innerHTML = "<div class='list-item'>暂无近期需要养护的提醒</div>";
+                return;
+            }
+            remindList.forEach(r=>{
+                let p = pets.find(x=>x.petId === r.petId);
+                let div = document.createElement("div");
+                div.className = "list-item";
+                div.innerText = `⚠️${p.petName} ${r.type}【${r.name}】将于${r.nextDate}到期，请尽快处理`;
+                remindBox.appendChild(div);
+            })
+        }
+
+        function loadHealthList() {
+            let box = document.getElementById("healthList");
+            box.innerHTML = "";
+            healthRecords.forEach(r=>{
+                let p = pets.find(x=>x.petId === r.petId);
+                let div = document.createElement("div");
+                div.className = "list-item";
+                div.innerText = `【${p.petName}】${r.type} ${r.name} 记录日:${r.date} 下次:${r.nextDate}`;
+                box.appendChild(div);
+            })
+        }
+
+        // 喂食记录
+        function addFeed() {
+            let pid = document.getElementById("feedPet").value;
+            let fname = document.getElementById("feedName").value;
+            let amt = document.getElementById("feedAmount").value;
+            let note = document.getElementById("feedNote").value;
+            if(!fname) return alert("请填写食物名称");
+            let rec = {
+                fid: Date.now().toString(),
+                petId: pid,
+                food: fname,
+                amount: amt,
+                note,
+                time: new Date().toLocaleString()
+            }
+            feedRecords.push(rec);
+            saveUserData();
+            loadFeedList();
+            alert("喂食记录保存成功");
+        }
+
+        function loadFeedList() {
+            let box = document.getElementById("feedList");
+            box.innerHTML = "";
+            feedRecords.sort((a,b)=>new Date(b.time)-new Date(a.time));
+            feedRecords.forEach(r=>{
+                let p = pets.find(x=>x.petId === r.petId);
+                let div = document.createElement("div");
+                div.className = "list-item";
+                div.innerText = `【${p.petName} ${r.time}】食物:${r.food} 分量:${r.amount} 备注:${r.note}`;
+                box.appendChild(div);
+            })
+        }
+
+        // 数据统计报告
+        function showStat() {
+            let pid = document.getElementById("statPet").value;
+            let p = pets.find(x=>x.petId === pid);
+            let petGrow = growRecords.filter(r=>r.petId === pid);
+            let petHealth = healthRecords.filter(r=>r.petId === pid);
+            let petFeed = feedRecords.filter(r=>r.petId === pid);
+            let resBox = document.getElementById("statResult");
+            let html = `<h4>${p.petName} 成长综合报告</h4>`;
+            html += `<p>总成长记录：${petGrow.length} 条</p>`;
+            html += `<p>健康台账总数：${petHealth.length} 条</p>`;
+            html += `<p>喂食记录总数：${petFeed.length} 条</p>`;
+            if(petGrow.length>0) {
+                let last = petGrow[petGrow.length-1];
+                html += `<p>最新体重：${last.weight}kg</p>`;
+            }
+            resBox.innerHTML = html;
+        }
+
+        // 页面加载初始化
+        window.onload = function() {
+            allUsers = JSON.parse(localStorage.getItem("allPetUsers")) || [];
+            userData = JSON.parse(localStorage.getItem("petUser")) || null;
+            if(userData) {
+                pets = userData.pets;
+                growRecords = userData.grow;
+                healthRecords = userData.health;
+                feedRecords = userData.feed;
+                switchPage("pageHome");
+            }
+        }
+    </script>
+</body>
+</html>
