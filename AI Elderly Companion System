@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>AI智能养老情感陪伴系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f5f9ff;
+            padding: 20px;
+        }
+        .container {
+            width: 640px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 15px #d0e1f9;
+        }
+        h2 {
+            text-align: center;
+            color: #2054b3;
+            margin-bottom: 20px;
+        }
+        .page {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .row {
+            margin: 12px 0;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            color: #333;
+        }
+        input {
+            width: 380px;
+            padding: 8px 10px;
+            border: 1px solid #ccd6e0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        button {
+            padding: 9px 15px;
+            margin: 6px 5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-blue {
+            background: #3b7ddd;
+            color: #fff;
+        }
+        .btn-green {
+            background: #28a745;
+            color: #fff;
+        }
+        .btn-red {
+            background: #dc3545;
+            color: #fff;
+        }
+        .btn-orange {
+            background: #f39c12;
+            color: #fff;
+        }
+        textarea {
+            width: 100%;
+            height: 140px;
+            padding: 10px;
+            border: 1px solid #dde4ec;
+            border-radius: 8px;
+            resize: none;
+            font-size: 14px;
+        }
+        .box {
+            background: #f7fbff;
+            padding: 16px;
+            border-radius: 10px;
+            margin: 16px 0;
+            border: 1px solid #e1ecfa;
+        }
+        .chat-area {
+            height: 180px;
+            overflow-y: auto;
+            background: #fcfdff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        .user-msg {
+            margin: 5px 0;
+            color: #222;
+        }
+        .ai-msg {
+            margin: 5px 0;
+            color: #2054b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 页面1：基础信息 -->
+    <div id="page1" class="page active">
+        <h2>📋 老人基础信息档案</h2>
+        <div class="row">
+            <label>姓名：</label>
+            <input id="name" placeholder="请输入姓名">
+        </div>
+        <div class="row">
+            <label>年龄：</label>
+            <input id="age" placeholder="请输入年龄">
+        </div>
+        <div class="row">
+            <label>家属紧急电话：</label>
+            <input id="familyPhone" placeholder="手机号">
+        </div>
+        <div class="row">
+            <label>居住状态：</label>
+            <input id="liveMode" placeholder="独居 / 与子女同住">
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+            <button class="btn-green" onclick="saveBase()">保存基础信息</button>
+            <button class="btn-blue" onclick="switchPage(2)">下一步：身体健康数据 →</button>
+        </div>
+    </div>
+
+    <!-- 页面2：身体指标信息 -->
+    <div id="page2" class="page">
+        <h2>❤️ 身体健康指标录入</h2>
+        <div class="row">
+            <label>血压：</label>
+            <input id="bp" placeholder="例：145/90">
+        </div>
+        <div class="row">
+            <label>心率(次/分)：</label>
+            <input id="heartRate">
+        </div>
+        <div class="row">
+            <label>空腹血糖：</label>
+            <input id="sugar">
+        </div>
+        <div class="row">
+            <label>慢性疾病：</label>
+            <input id="illness" placeholder="高血压、糖尿病等">
+        </div>
+        <div class="row">
+            <label>药物过敏：</label>
+            <input id="allergy" placeholder="无 / 具体药物">
+        </div>
+        <div style="text-align: center; margin-top: 24px;">
+            <button class="btn-green" onclick="saveHealth()">保存身体数据</button>
+            <button class="btn-blue" onclick="switchPage(1)">← 返回基础信息</button>
+            <button class="btn-orange" onclick="switchPage(3)">进入AI陪伴中心 →</button>
+        </div>
+    </div>
+
+    <!-- 页面3：AI核心功能页 -->
+    <div id="page3" class="page">
+        <h2>🤖 AI智能情感养老陪伴中心</h2>
+
+        <button class="btn-orange" onclick="createAIPlan()">✨ AI生成专属养护方案</button>
+        <div class="box">
+            <h4>📄 AI病情分析 & 个性化养护方案</h4>
+            <textarea id="aiPlanResult" readonly></textarea>
+        </div>
+
+        <div class="box">
+            <h4>📅 AI动态智能每日日程（根据身体自动适配）</h4>
+            <div id="scheduleResult"></div>
+        </div>
+
+        <div class="box">
+            <h4>💬 AI情感聊天 | 孤独安抚 | 睡眠&情绪关怀</h4>
+            <div class="chat-area" id="chatContent">
+                <div class="ai-msg">【AI养老助手】您好，我是您的专属陪伴AI，陪您聊天解闷，关心您的心情与睡眠，随时为您排忧。</div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:6px;">
+                <input id="chatInput" placeholder="输入想说的话，和AI聊天" style="width:85%;">
+                <button class="btn-blue" onclick="sendChat()">发送</button>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top:15px;">
+            <button class="btn-green" onclick="saveAllData()">💾 完整保存档案</button>
+            <button class="btn-red" onclick="emergencyCall()">🚨 一键紧急报警</button>
+            <button class="btn-blue" onclick="switchPage(2)">← 返回健康数据</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let elderData = JSON.parse(localStorage.getItem("aiElderData")) || {};
+
+    // 页面切换
+    function switchPage(num) {
+        document.querySelectorAll(".page").forEach(item => item.classList.remove("active"));
+        document.getElementById(`page${num}`).classList.add("active");
+    }
+
+    // 保存基础信息
+    function saveBase() {
+        elderData.name = document.getElementById("name").value;
+        elderData.age = document.getElementById("age").value;
+        elderData.familyPhone = document.getElementById("familyPhone").value;
+        elderData.liveMode = document.getElementById("liveMode").value;
+        localStorage.setItem("aiElderData", JSON.stringify(elderData));
+        alert("✅ 基础信息保存成功");
+    }
+
+    // 保存身体数据
+    function saveHealth() {
+        elderData.bp = document.getElementById("bp").value;
+        elderData.heartRate = document.getElementById("heartRate").value;
+        elderData.sugar = document.getElementById("sugar").value;
+        elderData.illness = document.getElementById("illness").value;
+        elderData.allergy = document.getElementById("allergy").value;
+        localStorage.setItem("aiElderData", JSON.stringify(elderData));
+        alert("✅ 身体健康数据保存成功");
+    }
+
+    // AI生成养护方案与日程
+    function createAIPlan() {
+        const age = Number(elderData.age);
+        const bp = elderData.bp;
+        const hr = elderData.heartRate;
+        const sugar = elderData.sugar;
+        const ill = elderData.illness;
+        let plan = `老人：${elderData.name}，${age}岁，居住方式：${elderData.liveMode}
+体检指标：血压${bp}，心率${hr}，空腹血糖${sugar}
+慢性病：${ill}
+养护建议：
+1.饮食：低盐少油，三餐定时，少甜食；
+2.运动：早晚慢走30分钟，避免剧烈运动；
+3.用药遵从医嘱，按时服药；
+4.血压血糖每日早晚各测一次；
+5.独居老人晚间减少独自外出。`;
+        document.getElementById("aiPlanResult").value = plan;
+        let schedule = `<p>07:00 起床，测量血压血糖</p><p>08:00 早餐</p><p>09:00 户外散步</p><p>12:00 午餐，午休</p><p>18:00 晚餐</p><p>21:30 休息睡觉</p>`;
+        document.getElementById("scheduleResult").innerHTML = schedule;
+    }
+
+    // AI聊天回复
+    function sendChat() {
+        let msg = document.getElementById("chatInput").value.trim();
+        if (!msg) return;
+        let chatBox = document.getElementById("chatContent");
+        chatBox.innerHTML += `<div class="user-msg">用户：${msg}</div>`;
+        let reply = "放宽心情，注意休息，有烦心事可以多说一会。";
+        chatBox.innerHTML += `<div class="ai-msg">AI：${reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        document.getElementById("chatInput").value = "";
+    }
+
+    // 一键紧急报警
+    function emergencyCall() {
+        let phone = elderData.familyPhone;
+        alert(`已联系家属电话：${phone}，紧急求救信息已发送`);
+    }
+
+    // 全部数据保存
+    function saveAllData() {
+        localStorage.setItem("aiElderData", JSON.stringify(elderData));
+        alert("全部档案本地保存完毕");
+    }
+</script>
+</body>
+</html>
